@@ -38,7 +38,7 @@ boolean lastState = 0;
 // WiFi network name and password:
 const char *networkName = "FC_Orbi";
 const char *networkPswd = "FC123456789office";
-#define myID 102
+#define myID 85
 IPAddress local_IP(192, 168, 1, myID);
 IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 0, 0); 
@@ -62,20 +62,19 @@ Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
 void setup() {
   // Initialize hardware serial:
-  Serial.begin(115200);
-  delay(2000);
+  //Serial.begin(115200);
+  //delay(2000);
   // while (!Serial) {
   //   delay(1);
   // };
-  Serial.println("bruh");
+  //Serial.println("bruh");
 
   //Check connection with TOF sensor
-  Serial.println("Adafruit VL53L0X test");
+  //Serial.println("Adafruit VL53L0X test");
   if (!lox.begin()) {
-    Serial.println(F("Failed to boot VL53L0X"));
-    Serial.println("Check device connections / restart!");
-    while (1)
-      ;
+    //Serial.println(F("Failed to boot VL53L0X"));
+    //Serial.println("Check device connections / restart!");
+    ESP.restart();
   }
 
   //Connect to the WiFi network
@@ -107,8 +106,11 @@ void loop() {
           OSC_Trig2();  //IF THE LAST STATE WAS LOW, trigger OSC message 2
         }
       }
-    } else {  //IF MEASUREMENTS ARE INVALID
+    } 
+    
+    else if (!connected) {  //IF MEASUREMENTS ARE INVALID
       //Serial.println(" out of range ");
+      connectToWiFi(networkName, networkPswd);
       sensorReading = 8888;
     }
   }
@@ -116,7 +118,7 @@ void loop() {
 }
 
 void connectToWiFi(const char *ssid, const char *pwd) {
-  Serial.println("Connecting to WiFi network: " + String(ssid));
+  //Serial.println("Connecting to WiFi network: " + String(ssid));
 
   // delete old config
   WiFi.disconnect(true);
@@ -127,7 +129,7 @@ void connectToWiFi(const char *ssid, const char *pwd) {
   WiFi.begin(ssid, pwd);
   WiFi.config(local_IP, gateway, subnet);
 
-  Serial.println("Waiting for WIFI connection...");
+  //Serial.println("Waiting for WIFI connection...");
 }
 
 // WARNING: WiFiEvent is called from a separate FreeRTOS task (thread)!
@@ -135,15 +137,15 @@ void WiFiEvent(WiFiEvent_t event) {
   switch (event) {
     case ARDUINO_EVENT_WIFI_STA_GOT_IP:
       //When connected set
-      Serial.print("WiFi connected! IP address: ");
-      Serial.println(WiFi.localIP());
+      //Serial.print("WiFi connected! IP address: ");
+      //Serial.println(WiFi.localIP());
       //initializes the UDP state
       //This initializes the transfer buffer
       udp.begin(WiFi.localIP(), udpPort);
       connected = true;
       break;
     case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
-      Serial.println("WiFi lost connection");
+      //Serial.println("WiFi lost connection");
       connected = false;
       break;
     default: break;
@@ -160,7 +162,7 @@ void OSC_Trig1() {
   msg.send(udp);    // send the bytes to the SLIP stream
   udp.endPacket();  // mark the end of the OSC Packet
   msg.empty();      // free space occupied by message
-  Serial.println("Button up!");
+  //Serial.println("Button up!");
   lastState = 0;
 }
 
@@ -174,6 +176,6 @@ void OSC_Trig2() {
   msg.send(udp);    // send the bytes to the SLIP stream
   udp.endPacket();  // mark the end of the OSC Packet
   msg.empty();      // free space occupied by message
-  Serial.println("Button message sent!");
+  //Serial.println("Button message sent!");
   lastState = 1;
 }
