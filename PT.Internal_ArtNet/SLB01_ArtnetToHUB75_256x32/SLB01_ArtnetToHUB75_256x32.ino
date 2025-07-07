@@ -10,6 +10,8 @@ Adafruit's NeoPixel library: https://github.com/adafruit/Adafruit_NeoPixel
 This example may be copied under the terms of the MIT license, see the LICENSE file for details
 */
 
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define USE_ADAFRUIT_GFX_LAYERS  //HUB75
 
@@ -77,7 +79,7 @@ int row;
 
 // Change ip and mac address for your setup
 byte ip[] = { 2, 0, 0, 201 };  //2.0.0.201
-byte mac[] = { 0x04, 0xE9, 0xE5, 0x00, 0x69, 0xEC };
+byte mac[] = { 0x04, 0xE9, 0xE5, 0x1A, 0xE3, 0x68};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

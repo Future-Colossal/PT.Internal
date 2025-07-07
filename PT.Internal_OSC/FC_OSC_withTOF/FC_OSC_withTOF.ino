@@ -62,18 +62,18 @@ Adafruit_VL53L0X lox = Adafruit_VL53L0X();
 
 void setup() {
   // Initialize hardware serial:
-  //Serial.begin(115200);
-  //delay(2000);
+  Serial.begin(115200);
+  delay(2000);
   // while (!Serial) {
   //   delay(1);
   // };
-  //Serial.println("bruh");
+  Serial.println("bruh");
 
   //Check connection with TOF sensor
-  //Serial.println("Adafruit VL53L0X test");
+  Serial.println("Adafruit VL53L0X test");
   if (!lox.begin()) {
-    //Serial.println(F("Failed to boot VL53L0X"));
-    //Serial.println("Check device connections / restart!");
+    Serial.println(F("Failed to boot VL53L0X"));
+    Serial.println("Check device connections / restart!");
     ESP.restart();
   }
 
@@ -91,11 +91,11 @@ void loop() {
     lox.rangingTest(&measure, false);  // pass in 'true' to get debug data printout!
 
     if (measure.RangeStatus != 4) {  // If the measurement is within range and phase failures do not have incorrect data
-      // Serial.print("Distance (mm): ");
-      // Serial.println(measure.RangeMilliMeter);
+      Serial.print("Distance (mm): ");
+      Serial.println(measure.RangeMilliMeter);
       sensorReading = measure.RangeMilliMeter;
 
-      if (sensorReading > maxThresh || sensorReading == 0) {  //IF THE BALL IS NOT DETECTED
+      if (sensorReading > maxThresh || sensorReading < minThresh) {  //IF THE BALL IS NOT DETECTED
         if (lastState == 1) {
           OSC_Trig1();  //IF THE lastState was HIGH, trigger OSC message 1
         }
@@ -108,8 +108,8 @@ void loop() {
       }
     } 
     
-    else if (!connected) {  //IF MEASUREMENTS ARE INVALID
-      //Serial.println(" out of range ");
+    else if (!connected) {  //IF NOT CONNECTED TO WIFI, TRY AND CONNECT TO WIFI
+      Serial.println("WiFi Disconnected.");
       connectToWiFi(networkName, networkPswd);
       sensorReading = 8888;
     }
@@ -118,7 +118,7 @@ void loop() {
 }
 
 void connectToWiFi(const char *ssid, const char *pwd) {
-  //Serial.println("Connecting to WiFi network: " + String(ssid));
+  Serial.println("Connecting to WiFi network: " + String(ssid));
 
   // delete old config
   WiFi.disconnect(true);
@@ -129,7 +129,7 @@ void connectToWiFi(const char *ssid, const char *pwd) {
   WiFi.begin(ssid, pwd);
   WiFi.config(local_IP, gateway, subnet);
 
-  //Serial.println("Waiting for WIFI connection...");
+  Serial.println("Waiting for WIFI connection...");
 }
 
 // WARNING: WiFiEvent is called from a separate FreeRTOS task (thread)!
@@ -162,7 +162,7 @@ void OSC_Trig1() {
   msg.send(udp);    // send the bytes to the SLIP stream
   udp.endPacket();  // mark the end of the OSC Packet
   msg.empty();      // free space occupied by message
-  //Serial.println("Button up!");
+  Serial.println("Button up!");
   lastState = 0;
 }
 
@@ -176,6 +176,6 @@ void OSC_Trig2() {
   msg.send(udp);    // send the bytes to the SLIP stream
   udp.endPacket();  // mark the end of the OSC Packet
   msg.empty();      // free space occupied by message
-  //Serial.println("Button message sent!");
+  Serial.println("Button message sent!");
   lastState = 1;
 }
