@@ -41,14 +41,14 @@ const char *networkPswd = "FC123456789office";
 #define myID 85
 IPAddress local_IP(192, 168, 1, myID);
 IPAddress gateway(192, 168, 1, 1);
-IPAddress subnet(255, 255, 0, 0); 
+IPAddress subnet(255, 255, 0, 0);
 
 //IP address to send UDP data to:
 // either use the ip address of the server or
 // a network broadcast
 
 //const char *udpAddress = "192.168.1.78"; //DOM LAPTOP
- const char *udpAddress = "192.168.1.35";  //MAIN LIGHT PC
+const char *udpAddress = "192.168.1.67";  //MAIN LIGHT PC
 
 const int udpPort = 8000;
 
@@ -83,17 +83,28 @@ void setup() {
   // LED SETUP
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, ledState);
+  // Serial.println(lox.getLimitCheckValue(1));
+  // lox.setLimitCheckEnable(1, 1);
+  // lox.setLimitCheckValue(1, 5000);
+  // Serial.println(lox.getLimitCheckValue(1));
+  lox.startRangeContinuous(100);
 }
 
 void loop() {
   if (connected) {  //IF WE ARE CONNECT TO WIFI, TAKE MEASUREMENTS
-    VL53L0X_RangingMeasurementData_t measure;
-    lox.rangingTest(&measure, false);  // pass in 'true' to get debug data printout!
+    //VL53L0X_RangingMeasurementData_t measure;
+    //lox.rangingTest(&measure, true);  // pass in 'true' to get debug data printout!
 
-    if (measure.RangeStatus != 4) {  // If the measurement is within range and phase failures do not have incorrect data
-      Serial.print("Distance (mm): ");
-      Serial.println(measure.RangeMilliMeter);
-      sensorReading = measure.RangeMilliMeter;
+    //if (measure.RangeStatus != 4) {  // If the measurement is within range and phase failures do not have incorrect data
+    if (lox.isRangeComplete()) {
+
+      //Serial.println(measure.RangeMilliMeter);
+      //sensorReading = measure.RangeMilliMeter;
+      sensorReading = lox.readRange();
+      if (sensorReading != 8191) {
+        Serial.print("Distance (mm): ");
+        Serial.println(sensorReading);
+      }
 
       if (sensorReading > maxThresh || sensorReading < minThresh) {  //IF THE BALL IS NOT DETECTED
         if (lastState == 1) {
@@ -106,19 +117,19 @@ void loop() {
           OSC_Trig2();  //IF THE LAST STATE WAS LOW, trigger OSC message 2
         }
       }
-    } 
-    
+    }
+
     else if (!connected) {  //IF NOT CONNECTED TO WIFI, TRY AND CONNECT TO WIFI
       Serial.println("WiFi Disconnected.");
       connectToWiFi(networkName, networkPswd);
       sensorReading = 8888;
     }
   }
-  delay(5);
+  delay(50);
 }
 
 void connectToWiFi(const char *ssid, const char *pwd) {
-  Serial.println("Connecting to WiFi network: " + String(ssid));
+  //Serial.println("Connecting to WiFi network: " + String(ssid));
 
   // delete old config
   WiFi.disconnect(true);
