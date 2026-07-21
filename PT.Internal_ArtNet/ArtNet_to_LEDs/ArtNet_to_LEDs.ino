@@ -57,10 +57,10 @@ This example may be copied under the terms of the MIT license, see the LICENSE f
 // const rgb24 defaultBackgroundColor = { 0, 0, 0 };
 
 // Neopixel settings
-const int numLeds = 60;                   // change for your setup
-const int numberOfChannels = numLeds * 4;  // Total number of channels you want to receive (1 led = 3 channels)
+const int numLeds = 181;                   // change for your setup
+const int numberOfChannels = numLeds * 3;  // Total number of channels you want to receive (1 led = 3 channels)
 const byte dataPin1 = 3;
-Adafruit_NeoPixel leds1 = Adafruit_NeoPixel(numLeds, dataPin1, NEO_GRBW + NEO_KHZ800);
+Adafruit_NeoPixel leds1 = Adafruit_NeoPixel(numLeds, dataPin1, NEO_RGB + NEO_KHZ800);
 
 
 // Artnet settings
@@ -76,7 +76,7 @@ int row;
 
 // Change ip and mac address for your setup
 byte ip[] = { 2, 0, 0, 203 };
-byte mac[] = { 0x04, 0xE9, 0xE5, 0x14, 0x44, 0x27 };
+byte mac[] = { 0x04, 0xE9, 0xE5, 0x15, 0xAC, 0xAD };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -133,9 +133,9 @@ void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* d
   }
 
   // read universe and put into the right part of the display buffer
-  for (int i = 0; i < length / 4; i++) {
-    int led = i + (universe - startUniverse) * (previousDataLength / 4);
-    leds1.setPixelColor(led, data[i * 4], data[i * 4 + 1], data[i * 4 + 2]);
+  for (int i = 0; i < length / 3; i++) {
+    int led = i + (universe - startUniverse) * (previousDataLength / 3);
+    leds1.setPixelColor(led, data[i * 3], data[i * 3 + 1], data[i * 3 + 2]);
 
     // rgb24 pixel_color = { data[i * 3], data[i * 3 + 1], data[i * 3 + 2] };
     // row = led/64;
@@ -157,23 +157,23 @@ void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* d
 
 void initTest() {
   for (int i = 0; i < numLeds; i++)
-    leds1.setPixelColor(i, 127, 0, 0, 0);
+    leds1.setPixelColor(i, 127, 0, 0);
   leds1.show();
   delay(2000);
   for (int i = 0; i < numLeds; i++)
-    leds1.setPixelColor(i, 0, 127, 0, 0);
+    leds1.setPixelColor(i, 0, 127, 0);
   leds1.show();
   delay(2000);
   for (int i = 0; i < numLeds; i++)
-    leds1.setPixelColor(i, 0, 0, 127, 0);
+    leds1.setPixelColor(i, 0, 0, 127);
   leds1.show();
   delay(2000);
+  // for (int i = 0; i < numLeds; i++)
+  //   leds1.setPixelColor(i, 0, 0, 0, 127);
+  // leds1.show();
+  // delay(2000);
   for (int i = 0; i < numLeds; i++)
-    leds1.setPixelColor(i, 0, 0, 0, 127);
-  leds1.show();
-  delay(2000);
-  for (int i = 0; i < numLeds; i++)
-    leds1.setPixelColor(i, 0, 0, 0, 0);
+    leds1.setPixelColor(i, 0, 0, 0);
   leds1.show();
   delay(2000);
 }

@@ -75,8 +75,8 @@ int previousDataLength = 0;
 int row;
 
 // Change ip and mac address for your setup
-byte ip[] = { 2, 0, 0, 201 };  //2.0.0.201
-byte mac[] = { 0x04, 0xE9, 0xE5, 0x00, 0x69, 0xEC };
+byte ip[] = { 10, 0, 0, 2 };  //2.0.0.201
+byte mac[] = { 0x04, 0xE9, 0xE5, 0x1A, 0xE3, 0x61 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
